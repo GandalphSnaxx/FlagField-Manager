@@ -1,0 +1,10 @@
+^C:\USERS\RAYRI\DOCUMENTS\RAY'S C++ LIBRARIES\FLAG MANAGER\BUILD\GOOGLETEST-DOWNLOAD\CMAKEFILES\C72FF9A44DFE7742C9512933A8404B99\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download" "-BC:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/googletest-download.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

@@ -1,0 +1,150 @@
+^C:\USERS\RAYRI\DOCUMENTS\RAY'S C++ LIBRARIES\FLAG MANAGER\BUILD\GOOGLETEST-DOWNLOAD\CMAKEFILES\959A6C1BAA0B33BC08751174A56FA514\GOOGLETEST-MKDIR.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -Dcfgdir=/Debug -P "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/googletest-prefix/tmp/googletest-mkdirs.cmake"
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/googletest-prefix/src/googletest-stamp/Debug/googletest-mkdir"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RAYRI\DOCUMENTS\RAY'S C++ LIBRARIES\FLAG MANAGER\BUILD\GOOGLETEST-DOWNLOAD\CMAKEFILES\959A6C1BAA0B33BC08751174A56FA514\GOOGLETEST-DOWNLOAD.RULE
+setlocal
+cd "C:\Users\RayRi\Documents\Ray's C++ Libraries\Flag Manager\build"
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/googletest-prefix/tmp/googletest-gitclone.cmake"
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/googletest-prefix/src/googletest-stamp/Debug/googletest-download"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RAYRI\DOCUMENTS\RAY'S C++ LIBRARIES\FLAG MANAGER\BUILD\GOOGLETEST-DOWNLOAD\CMAKEFILES\959A6C1BAA0B33BC08751174A56FA514\GOOGLETEST-UPDATE.RULE
+setlocal
+cd "C:\Users\RayRi\Documents\Ray's C++ Libraries\Flag Manager\build\googletest-src"
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -Dcan_fetch=YES -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/googletest-prefix/tmp/googletest-gitupdate.cmake"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RAYRI\DOCUMENTS\RAY'S C++ LIBRARIES\FLAG MANAGER\BUILD\GOOGLETEST-DOWNLOAD\CMAKEFILES\959A6C1BAA0B33BC08751174A56FA514\GOOGLETEST-PATCH.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/googletest-prefix/src/googletest-stamp/Debug/googletest-patch"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RAYRI\DOCUMENTS\RAY'S C++ LIBRARIES\FLAG MANAGER\BUILD\GOOGLETEST-DOWNLOAD\CMAKEFILES\959A6C1BAA0B33BC08751174A56FA514\GOOGLETEST-CONFIGURE.RULE
+setlocal
+cd "C:\Users\RayRi\Documents\Ray's C++ Libraries\Flag Manager\build\googletest-build"
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/googletest-prefix/src/googletest-stamp/Debug/googletest-configure"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RAYRI\DOCUMENTS\RAY'S C++ LIBRARIES\FLAG MANAGER\BUILD\GOOGLETEST-DOWNLOAD\CMAKEFILES\959A6C1BAA0B33BC08751174A56FA514\GOOGLETEST-BUILD.RULE
+setlocal
+cd "C:\Users\RayRi\Documents\Ray's C++ Libraries\Flag Manager\build\googletest-build"
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/googletest-prefix/src/googletest-stamp/Debug/googletest-build"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RAYRI\DOCUMENTS\RAY'S C++ LIBRARIES\FLAG MANAGER\BUILD\GOOGLETEST-DOWNLOAD\CMAKEFILES\959A6C1BAA0B33BC08751174A56FA514\GOOGLETEST-INSTALL.RULE
+setlocal
+cd "C:\Users\RayRi\Documents\Ray's C++ Libraries\Flag Manager\build\googletest-build"
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/googletest-prefix/src/googletest-stamp/Debug/googletest-install"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RAYRI\DOCUMENTS\RAY'S C++ LIBRARIES\FLAG MANAGER\BUILD\GOOGLETEST-DOWNLOAD\CMAKEFILES\959A6C1BAA0B33BC08751174A56FA514\GOOGLETEST-TEST.RULE
+setlocal
+cd "C:\Users\RayRi\Documents\Ray's C++ Libraries\Flag Manager\build\googletest-build"
+if %errorlevel% neq 0 goto :cmEnd
+C:
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E echo_append
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/googletest-prefix/src/googletest-stamp/Debug/googletest-test"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RAYRI\DOCUMENTS\RAY'S C++ LIBRARIES\FLAG MANAGER\BUILD\GOOGLETEST-DOWNLOAD\CMAKEFILES\90522695F3CB75889A9228540BE6C0DD\GOOGLETEST-COMPLETE.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -E make_directory "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/CMakeFiles/Debug"
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/CMakeFiles/Debug/googletest-complete"
+if %errorlevel% neq 0 goto :cmEnd
+"C:\Program Files\CMake\bin\cmake.exe" -E touch "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/googletest-prefix/src/googletest-stamp/Debug/googletest-done"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RAYRI\DOCUMENTS\RAY'S C++ LIBRARIES\FLAG MANAGER\BUILD\GOOGLETEST-DOWNLOAD\CMAKEFILES\C72FF9A44DFE7742C9512933A8404B99\GOOGLETEST.RULE
+setlocal
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\USERS\RAYRI\DOCUMENTS\RAY'S C++ LIBRARIES\FLAG MANAGER\BUILD\GOOGLETEST-DOWNLOAD\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SC:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download" "-BC:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download" --check-stamp-file "C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

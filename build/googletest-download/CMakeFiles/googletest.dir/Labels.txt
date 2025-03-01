@@ -1,0 +1,14 @@
+# Target labels
+ googletest
+# Source files and their labels
+C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/CMakeFiles/googletest
+C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/CMakeFiles/c72ff9a44dfe7742c9512933a8404b99/googletest.rule
+C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/CMakeFiles/90522695f3cb75889a9228540be6c0dd/googletest-complete.rule
+C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/CMakeFiles/959a6c1baa0b33bc08751174a56fa514/googletest-build.rule
+C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/CMakeFiles/959a6c1baa0b33bc08751174a56fa514/googletest-configure.rule
+C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/CMakeFiles/959a6c1baa0b33bc08751174a56fa514/googletest-download.rule
+C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/CMakeFiles/959a6c1baa0b33bc08751174a56fa514/googletest-install.rule
+C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/CMakeFiles/959a6c1baa0b33bc08751174a56fa514/googletest-mkdir.rule
+C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/CMakeFiles/959a6c1baa0b33bc08751174a56fa514/googletest-patch.rule
+C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/CMakeFiles/959a6c1baa0b33bc08751174a56fa514/googletest-test.rule
+C:/Users/RayRi/Documents/Ray's C++ Libraries/Flag Manager/build/googletest-download/CMakeFiles/959a6c1baa0b33bc08751174a56fa514/googletest-update.rule
