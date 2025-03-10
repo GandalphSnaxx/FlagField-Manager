@@ -1,6 +1,6 @@
-#ifndef FLAGFIELD_HPP
-#define FLAGFIELD_HPP
-
+#pragma once
+#ifndef FLAGFIELD_HPP__
+#define FLAGFIELD_HPP__
 /**
  * @file include/flagfield.hpp
  * @author Ray Richter
@@ -19,7 +19,7 @@
 #define DEBUG_MSG(msg)
 #endif
 
-#define USE_HEAP
+// #define FF_USE_HEAP
 
 /// @brief A class to manage a field of flags.
 /// @tparam numFlags The maximum number of flags managed. Default = 8.
@@ -31,7 +31,7 @@ public:
     template <typename... Flags>
     explicit FlagField(Flags... flags) {
         DEBUG_MSG("Creating FlagField from a list of flags...");
-#ifdef USE_HEAP
+#ifdef FF_USE_HEAP
         flags_ = new uint8_t[(numFlags + 7) / 8];
 #endif
         // Initialize flags array to zero
@@ -45,7 +45,7 @@ public:
     FlagField(const FlagField<numFlags> &other) {
         DEBUG_MSG("Creating FlagField from another FlagField both with size: " << numFlags); // Debug stament
         // Copy flags from other
-    #ifdef USE_HEAP
+    #ifdef FF_USE_HEAP
         flags_ = new uint8_t[(numFlags + 7) / 8];
     #endif
         // Initialize flags array to zero
@@ -56,7 +56,7 @@ public:
     /// @brief Default constructor.
     FlagField() {
         DEBUG_MSG("Creating FlagField with default constructor with size: " << numFlags); // Debug stament
-    #ifdef USE_HEAP
+    #ifdef FF_USE_HEAP
         flags_ = new uint8_t[(numFlags + 7) / 8];
     #endif
         // Initialize flags array to zero
@@ -65,7 +65,7 @@ public:
     /// @brief Deconstructor.
     ~FlagField() { 
         DEBUG_MSG("Deconstructing FlagField with size: " << numFlags); // Debug stament
-    #ifdef USE_HEAP
+    #ifdef FF_USE_HEAP
         delete[] flags_;
     #endif
     }
@@ -253,7 +253,7 @@ public:
     
 /// @section Private Members
 private:
-#ifdef USE_HEAP
+#ifdef FF_USE_HEAP
     /// @brief An array of flags on the heap. 8]; 
     uint8_t* flags_ = new uint8_t[(numFlags + 7) / 8]; 
 #else
