@@ -81,8 +81,9 @@ public:
     void setFlags(const size_t &flag) { setFlag(flag); }
     /// @brief Set a list of flags.
     template <typename... Flags>
-    void setFlags(const size_t &flag, Flags... flags) 
-    { setFlag(flag); setFlags(flags...); }
+    void setFlags(const size_t &flag, Flags... flags) { setFlag(flag); setFlags(flags...); }
+    /// @brief Sets a flag if the bool is `true`.
+    void setFlagIf(const size_t &flag, const bool &b) { if (b) { setFlag(flag); } }
     /// @brief Clear a flag at the given index.
     void clearFlag(const size_t &index) {
         if (index >= numFlags) throw std::out_of_range("Clear Flag Err: Index out of range");
