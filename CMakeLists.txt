@@ -1,58 +1,26 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(FlagFieldLibrary)
+# Set the project name
+project(FlagFieldManager)
 
+# Specify the C++ standard
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# Add the include directory for the header-only library
-add_library(FlagField INTERFACE)
-target_include_directories(FlagField INTERFACE include)
-
-include(ExternalProject)
-
-# Download and unpack googletest at configure time
-ExternalProject_Add(
-  googletest
-  GIT_REPOSITORY https://github.com/google/googletest.git
-  GIT_TAG release-1.11.0
-  SOURCE_DIR ${CMAKE_BINARY_DIR}/googletest-src
-  BINARY_DIR ${CMAKE_BINARY_DIR}/googletest-build
-  CONFIGURE_COMMAND ${CMAKE_COMMAND} -G ${CMAKE_GENERATOR} ${CMAKE_BINARY_DIR}/googletest-src -S ${CMAKE_BINARY_DIR}/googletest-src -B ${CMAKE_BINARY_DIR}/googletest-build
-  BUILD_COMMAND ${CMAKE_COMMAND} --build .
-  INSTALL_COMMAND ""
-  TEST_COMMAND ""
-)
-
-# Add the googletest targets
-add_library(gtest IMPORTED STATIC GLOBAL)
-add_library(gtest_main IMPORTED STATIC GLOBAL)
-set_target_properties(gtest PROPERTIES
-  IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/googletest-build/lib/libgtest.a"
-  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/googletest-src/googletest/include"
-)
-set_target_properties(gtest_main PROPERTIES
-  IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/googletest-build/lib/libgtest_main.a"
-  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/googletest-src/googletest/include"
-)
-
-# Include Google Test headers
-include_directories(${CMAKE_BINARY_DIR}/googletest-src/googletest/include)
-
-# Include FlagField headers
+# Add the include directory
 include_directories(include)
 
-# Ensure consistent runtime library settings
-if (MSVC)
-  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
-endif()
+# # Add the source files
+# add_library(FlagField STATIC src/FlagField.cpp)
 
-# Add the test executable
-add_executable(FlagField_gTests tests/FlagField_gTests.cpp)
-target_link_libraries(FlagField_gTests FlagField gtest gtest_main)
+# Add the executable for tests
+add_executable(FlagField_Tests tests/FlagField_Tests.cpp)
 
-# Add the tests
+# Link the library to the tests
+target_link_libraries(FlagField_Tests)
+
+# Enable testing
 enable_testing()
-add_test(NAME FlagFieldTests COMMAND FlagField_gTests)
+
+# Add a test
+add_test(NAME FlagFieldTests COMMAND FlagField_Tests)

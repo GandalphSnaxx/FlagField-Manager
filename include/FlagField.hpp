@@ -98,6 +98,11 @@ public:
         if (index >= numFlags) throw std::out_of_range("Is Flag Set Err: Index out of range");
         FF_DEBUG_MSG("Checking if flag is set at index: " << index); // Debug stament
         return flags_[index / 8] & (1 << (index % 8)); }
+    /// @brief Query a list of flags. Returns `TRUE` if every queried flag is set.
+    bool areFlagsSet(const size_t &flag) const { return isFlagSet(flag); }
+    /// @brief Query a list of flags. Returns `TRUE` if every queried flag is set.
+    template <typename... Flags> bool areFlagsSet(const size_t &flag, Flags... flags) const {
+        return isFlagSet(flag) && areFlagsSet(flags...); }
     /// @brief Gets the number of managed flags.
     constexpr size_t size() const { return numFlags; }
 
@@ -108,8 +113,9 @@ public:
         fill_(0); setFlag(index); return *this; }
     /// @brief Returns `true` if only the given flag is set.
     bool operator==(const size_t &index) const {
+        if (index > size()) return false;
         for (size_t i = 0; i < (size() + 7) / 8; i++) {
-            if (flags_[i] != 0) { if (flags_[i] != (1 << (i % 8))) return false; }
+            if (flags_[i] != 0) { if (flags_[i] != (1 << (index % 8))) return false; }
         } return true; }
     /// @brief Returns `true` if the given flag is set.
     bool operator& (const size_t &index) const { return isFlagSet(index); }
@@ -171,25 +177,6 @@ public:
     /// @brief Makes a new FlagField object with XOR flags.
     FlagField<numFlags>  operator^ (const FlagField<numFlags> &other) const {
         FlagField<numFlags> ret = *this; ret ^= other; return ret; }
-    /// @brief Returns `true` if the same flags are set.
-    bool       operator==(const FlagField<numFlags> &other) const {
-        for (size_t i = 0; i < (size() + 7) / 8; i++) { if (flags_[i] != other.flags_[i]) return false; }
-        return true; }
-    /// @brief Returns `false` if the same flags are set.
-    bool       operator!=(const FlagField<numFlags> &other) const {
-        return !operator==(other); }
-    /// @brief Compares the number of set flags.
-    bool       operator> (const FlagField<numFlags> &other) const {
-        return countSetBits_() > other.countSetBits_(); }
-    /// @brief Compares the number of set flags.
-    bool       operator< (const FlagField<numFlags> &other) const {
-        return other.operator>(*this); }
-    /// @brief Compares the number of set flags.
-    bool       operator>=(const FlagField<numFlags> &other) const {
-        return !operator<(other); }
-    /// @brief Compares the number of set flags.
-    bool       operator<=(const FlagField<numFlags> &other) const {
-        return !operator>(other); }
     /// @brief Makes a new FlagField object with both flags.
     FlagField<numFlags>  operator+ (const FlagField<numFlags> &other) const {
         FlagField<numFlags> ret = *this; ret += other; return ret; }
@@ -209,10 +196,32 @@ public:
             return byte;
         }); return *this; }
 
+/// @section Binary FlagField Comparison Operators
+
+    /// @brief Returns `true` if the same flags are set.
+    bool       operator==(const FlagField<numFlags> &other) const {
+        for (size_t i = 0; i < (size() + 7) / 8; i++) { if (flags_[i] != other.flags_[i]) return false; }
+        return true; }
+    /// @brief Returns `false` if the same flags are set.
+    bool       operator!=(const FlagField<numFlags> &other) const {
+        return !operator==(other); }
+    /// @brief Compares the number of set flags.
+    bool       operator> (const FlagField<numFlags> &other) const {
+        return countSetBits_() > other.countSetBits_(); }
+    /// @brief Compares the number of set flags.
+    bool       operator< (const FlagField<numFlags> &other) const {
+        return other.operator>(*this); }
+    /// @brief Compares the number of set flags.
+    bool       operator>=(const FlagField<numFlags> &other) const {
+        return !operator<(other); }
+    /// @brief Compares the number of set flags.
+    bool       operator<=(const FlagField<numFlags> &other) const {
+        return !operator>(other); }
+
 /// @section Member Access Operators
 
-    /// @brief Returns `true` if indexed flag is set.
-    bool    operator()(const size_t &index) const { return isFlagSet(index); }
+    /// @brief Returns `true` if indexed flag(s) is/are set.
+    template <typename... Flags> bool operator()(Flags... flags) const { return areFlagsSet(flags...); }
     /// @brief Returns a copy of the queried flag byte.
     /// @param index The byte index to return. Must be < (size - 1) / 8.
     uint8_t operator[](const size_t &index) const {
@@ -245,7 +254,7 @@ public:
     // /// @brief TODO
     // operator uint8_t()const;
     
-/// @section Unary Postfix Operators
+/// @section Unary Prefix Operators
 
     /// @brief Sets every flag.
     FlagField<numFlags>& operator++() { fill_(0xFF); return *this; }
@@ -321,10 +330,16 @@ private:
     void fillOp_(std::function<uint8_t& (uint8_t&)> op_) {
         for (size_t i = 0; i < (size() + 7) / 8; i++) op_(flags_[i]); }
     
+    /// @brief Counts the number of set flags.
+    int countSetBits_() const {
+        int count = 0;
+        for (size_t i = 0; i < (size() + 7) / 8; i++) { count += countSetBits_(flags_[i]); }
+        return count; }
+
     /// @brief Counts the number of 1s in a byte.
     int countSetBits_(uint8_t byte) const {
         int count = 0;
-        while (byte) count += byte & 1; byte >>= 1;
+        while (byte) { count += byte & 1; byte >>= 1; }
         return count; }
 };
 
