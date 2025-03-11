@@ -6,8 +6,8 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add the include directory for the header-only library
-add_library(flagfield INTERFACE)
-target_include_directories(flagfield INTERFACE include)
+add_library(FlagField INTERFACE)
+target_include_directories(FlagField INTERFACE include)
 
 include(ExternalProject)
 
@@ -47,9 +47,10 @@ if (MSVC)
 endif()
 
 # Add the test executable
-add_executable(flagfield_tests tests/flagfield_tests.cpp)
-target_link_libraries(flagfield_tests flagfield gtest gtest_main)
+add_executable(FlagField_gTests tests/FlagField_gTests.cpp)
+add_executable(FlagField_MyTests tests/FlagField_MyTests.cpp)
+target_link_libraries(FlagField_gTests FlagField gtest gtest_main)
 
 # Add the tests
 enable_testing()
-add_test(NAME FlagFieldTests COMMAND flagfield_tests)
+add_test(NAME FlagFieldTests COMMAND FlagField_gTests)
