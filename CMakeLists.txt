@@ -39,6 +39,9 @@ set_target_properties(gtest_main PROPERTIES
 # Include Google Test headers
 include_directories(${CMAKE_BINARY_DIR}/googletest-src/googletest/include)
 
+# Include FlagField headers
+include_directories(include)
+
 # Ensure consistent runtime library settings
 if (MSVC)
   set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)

@@ -5,7 +5,7 @@
  */
 #define FF_USE_HEAP
 // #define FLAGFIELD_DEBUG
-#include "flagfield.hpp"
+#include "FlagField.hpp"
 #include <iostream>
 
 using namespace std;

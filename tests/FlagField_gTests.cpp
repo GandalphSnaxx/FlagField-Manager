@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 // #define FLAGFIELD_DEBUG
 #define FF_USE_HEAP
-#include "flagfield.hpp"
+#include "FlagField.hpp"
 
 TEST(FlagFieldTests, SetFlag) {
     FlagField<8> ff;
