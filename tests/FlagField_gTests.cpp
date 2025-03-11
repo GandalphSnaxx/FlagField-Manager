@@ -218,13 +218,11 @@ TEST(FlagFieldTests, EqualityAndInequalityOperators) {
 }
 
 TEST(FlagFieldTests, OutStreamOperator) {
-    FlagField<8> ff;
-    ff.setFlag(3);
-    ff.setFlag(5);
+    FlagField<8> ff(3, 5);
     std::cout << ff << std::endl;
     std::stringstream ss;
     ss << ff;
-    EXPECT_EQ(ss.str(), "FlagField<8>: 0b00010010");
+    EXPECT_EQ(ss.str(), "FlagField<8>: 0b00010100");
 
     FlagField<64> ff2(7, 15, 23, 31, 39, 47, 55, 63);
     std::cout << ff2 << std::endl;

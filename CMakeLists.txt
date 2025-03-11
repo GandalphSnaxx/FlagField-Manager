@@ -51,7 +51,6 @@ endif()
 
 # Add the test executable
 add_executable(FlagField_gTests tests/FlagField_gTests.cpp)
-add_executable(FlagField_MyTests tests/FlagField_MyTests.cpp)
 target_link_libraries(FlagField_gTests FlagField gtest gtest_main)
 
 # Add the tests
