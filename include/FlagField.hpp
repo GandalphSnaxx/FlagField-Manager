@@ -11,12 +11,12 @@
 #include <functional>
 #include <stdarg.h>
 #include <stdexcept>
+#include <ostream>
 
 #ifdef FLAGFIELD_DEBUG
-#include <iostream> // Add this for debug output
-#define DEBUG_MSG(msg) std::cout << msg << std::endl
+#define FF_DEBUG_MSG(msg) std::cout << msg << std::endl
 #else
-#define DEBUG_MSG(msg)
+#define FF_DEBUG_MSG(msg)
 #endif
 
 // #define FF_USE_HEAP
@@ -30,7 +30,7 @@ public:
     /// @brief Explicit constructor from a list of flags.
     template <typename... Flags>
     explicit FlagField(Flags... flags) {
-        DEBUG_MSG("Creating FlagField from a list of flags...");
+        FF_DEBUG_MSG("Creating FlagField from a list of flags...");
 #ifdef FF_USE_HEAP
         flags_ = new uint8_t[(numFlags + 7) / 8];
 #endif
@@ -43,7 +43,7 @@ public:
 
     /// @brief Copy constructor. 
     FlagField(const FlagField<numFlags> &other) {
-        DEBUG_MSG("Creating FlagField from another FlagField both with size: " << numFlags); // Debug stament
+        FF_DEBUG_MSG("Creating FlagField from another FlagField both with size: " << numFlags); // Debug stament
         // Copy flags from other
     #ifdef FF_USE_HEAP
         flags_ = new uint8_t[(numFlags + 7) / 8];
@@ -55,7 +55,7 @@ public:
 
     /// @brief Default constructor.
     FlagField() {
-        DEBUG_MSG("Creating FlagField with default constructor with size: " << numFlags); // Debug stament
+        FF_DEBUG_MSG("Creating FlagField with default constructor with size: " << numFlags); // Debug stament
     #ifdef FF_USE_HEAP
         flags_ = new uint8_t[(numFlags + 7) / 8];
     #endif
@@ -64,7 +64,7 @@ public:
 
     /// @brief Deconstructor.
     ~FlagField() { 
-        DEBUG_MSG("Deconstructing FlagField with size: " << numFlags); // Debug stament
+        FF_DEBUG_MSG("Deconstructing FlagField with size: " << numFlags); // Debug stament
     #ifdef FF_USE_HEAP
         delete[] flags_;
     #endif
@@ -75,7 +75,7 @@ public:
     /// @brief Set a flag at the given index.
     void setFlag(const size_t &index) {
         if (index >= numFlags) throw std::out_of_range("Set Flag Err: Index out of range");
-        DEBUG_MSG("Setting flag at index: " << index); // Debug stament
+        FF_DEBUG_MSG("Setting flag at index: " << index); // Debug stament
         flags_[index / 8] |= (1 << (index % 8)); }
     /// @brief Set a list of flags.
     void setFlags(const size_t &flag) { setFlag(flag); }
@@ -86,17 +86,17 @@ public:
     /// @brief Clear a flag at the given index.
     void clearFlag(const size_t &index) {
         if (index >= numFlags) throw std::out_of_range("Clear Flag Err: Index out of range");
-        DEBUG_MSG("Clearing flag at index: " << index); // Debug stament
+        FF_DEBUG_MSG("Clearing flag at index: " << index); // Debug stament
         flags_[index / 8] &= ~(1 << (index % 8)); }
     /// @brief Toggle a flag at the given index.
     void toggleFlag(const size_t &index) {
         if (index >= numFlags) throw std::out_of_range("Toggle Flag Err: Index out of range");
-        DEBUG_MSG("Toggling flag at index: " << index); // Debug stament
+        FF_DEBUG_MSG("Toggling flag at index: " << index); // Debug stament
         flags_[index / 8] ^= (1 << (index % 8)); }
     /// @brief Query a flag at the given index.
     bool isFlagSet(const size_t &index) const {
         if (index >= numFlags) throw std::out_of_range("Is Flag Set Err: Index out of range");
-        DEBUG_MSG("Checking if flag is set at index: " << index); // Debug stament
+        FF_DEBUG_MSG("Checking if flag is set at index: " << index); // Debug stament
         return flags_[index / 8] & (1 << (index % 8)); }
     /// @brief Gets the number of managed flags.
     constexpr size_t size() const { return numFlags; }
@@ -251,6 +251,18 @@ public:
     FlagField<numFlags>& operator++() { fill_(0xFF); return *this; }
     /// @brief Clears every flag.
     FlagField<numFlags>& operator--() { fill_(0);    return *this; }
+
+/// @section Out Stream Operator
+
+    /// @brief Outputs the flags to the given output stream.
+    friend std::ostream& operator<<(std::ostream &os, const FlagField<numFlags> &ff) {
+        os << "FlagField<" << numFlags << ">: 0b";
+        for (size_t i = 0; i < numFlags; i++) { 
+            if (i % 8 == 0 && i != 0) os << " ";
+            os << (ff.isFlagSet(i) ? "1" : "0"); 
+        }
+        return os;
+    }
     
 /// @section Private Members
 private:
@@ -315,5 +327,17 @@ private:
         while (byte) count += byte & 1; byte >>= 1;
         return count; }
 };
+
+// /// @section FlagField Related Functions
+
+// template <size_t numFlags = 8>
+// std::ostream& operator<<(std::ostream &os, const FlagField<numFlags> &ff) {
+//     os << "FlagField<" << numFlags << ">: 0b";
+//     for (size_t i = 0; i < numFlags; i++) { 
+//         if (i % 8 == 0 && i != 0) os << " ";
+//         os << (ff.isFlagSet(i) ? "1" : "0"); 
+//     }
+//     return os;
+// }
 
 #endif // FLAGFIELD_HPP
