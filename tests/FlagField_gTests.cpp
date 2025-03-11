@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
-#define FLAGFIELD_DEBUG
+// #define FLAGFIELD_DEBUG
+#define FF_USE_HEAP
 #include "flagfield.hpp"
 
 TEST(FlagFieldTests, SetFlag) {
@@ -214,4 +215,20 @@ TEST(FlagFieldTests, EqualityAndInequalityOperators) {
     ff2.setFlag(4);
     EXPECT_FALSE(ff1 == ff2);
     EXPECT_TRUE(ff1 != ff2);
+}
+
+TEST(FlagFieldTests, OutStreamOperator) {
+    FlagField<8> ff;
+    ff.setFlag(3);
+    ff.setFlag(5);
+    std::cout << ff << std::endl;
+    std::stringstream ss;
+    ss << ff;
+    EXPECT_EQ(ss.str(), "FlagField<8>: 0b00010010");
+
+    FlagField<64> ff2(7, 15, 23, 31, 39, 47, 55, 63);
+    std::cout << ff2 << std::endl;
+    std::stringstream ss2;
+    ss2 << ff2;
+    EXPECT_EQ(ss2.str(), "FlagField<64>: 0b00000001 00000001 00000001 00000001 00000001 00000001 00000001 00000001");
 }
