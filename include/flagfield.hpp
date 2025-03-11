@@ -230,8 +230,11 @@ public:
         byte = ~byte;
         return byte;
     }); return *this;}
-    /// @brief Gets a pointer to the uint8_t flag array.
-    uint8_t* operator&() const { return flags_;}
+
+    /// @brief Gets a pointer to this FlagField.
+    FlagField<numFlags>* operator&() const { return (FlagField<numFlags>*)this; }
+    /// @brief Gets a pointer to the flags array.
+    uint8_t* operator*() { return flags_; }
     /// @brief Explicit cast to bool. `false` if no flags are set.
     explicit operator bool() const { return !operator!(); }
 
@@ -239,8 +242,6 @@ public:
     // uint8_t*   operator+()const;
     // /// @brief TODO
     // uint8_t*   operator-()const;
-    // /// @brief TODO
-    // uint8_t*   operator*()const;
     // /// @brief TODO
     // operator uint8_t()const;
     

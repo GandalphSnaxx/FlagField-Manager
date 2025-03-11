@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#define FLAGFIELD_DEBUG
 #include "flagfield.hpp"
 
 TEST(FlagFieldTests, SetFlag) {
@@ -152,9 +153,11 @@ TEST(FlagFieldTests, UnaryPrefixOperators) {
     EXPECT_FALSE(!ff);
     ~ff;
     EXPECT_FALSE(ff.isFlagSet(3));
-    uint8_t* flags = &ff;
+    uint8_t* flags = *ff;
     EXPECT_NE(flags, nullptr);
     EXPECT_TRUE((bool)ff);
+    FlagField<8>* ffptr = &ff;
+    EXPECT_NE(ffptr, nullptr);
 }
 
 TEST(FlagFieldTests, UnaryPostfixOperators) {

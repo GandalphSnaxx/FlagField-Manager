@@ -16,7 +16,7 @@
         {
             "name": "Test Configuration",
             "includePath": [
-                "${workspaceFolder}/build/**",
+                "${workspaceFolder}/build/googletest-src/googletest/include",
                 "${workspaceFolder}/include"
             ],
             "defines": [

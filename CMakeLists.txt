@@ -24,19 +24,27 @@ ExternalProject_Add(
   TEST_COMMAND ""
 )
 
-# # Add googletest directly to our build. This defines
-# # the gtest and gtest_main targets.
-# add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
-#                  ${CMAKE_BINARY_DIR}/googletest-build
-#                  EXCLUDE_FROM_ALL)
+# Add the googletest targets
+add_library(gtest IMPORTED STATIC GLOBAL)
+add_library(gtest_main IMPORTED STATIC GLOBAL)
+set_target_properties(gtest PROPERTIES
+  IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/googletest-build/lib/libgtest.a"
+  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/googletest-src/googletest/include"
+)
+set_target_properties(gtest_main PROPERTIES
+  IMPORTED_LOCATION "${CMAKE_BINARY_DIR}/googletest-build/lib/libgtest_main.a"
+  INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_BINARY_DIR}/googletest-src/googletest/include"
+)
 
 # Include Google Test headers
 include_directories(${CMAKE_BINARY_DIR}/googletest-src/googletest/include)
 
 # Ensure consistent runtime library settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
-set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+if (MSVC)
+  set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+endif()
 
 # Add the test executable
 add_executable(flagfield_tests tests/flagfield_tests.cpp)

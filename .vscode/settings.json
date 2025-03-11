@@ -4,9 +4,8 @@
     "C_Cpp.default.cStandard": "c17",
     "C_Cpp.default.includePath": [
         "${workspaceFolder}/include",
-        "${workspaceFolder}/src",
         "${workspaceFolder}/tests",
-        "${workspaceFolder}\\build\\googletest-src\\googletest\\include"
+        "${workspaceFolder}/build/googletest-src/googletest/include"
     ],
     "files.associations": {
         "compare": "cpp",
