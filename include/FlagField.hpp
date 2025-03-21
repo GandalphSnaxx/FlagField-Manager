@@ -81,14 +81,16 @@
 #endif
 
 #ifdef FLAGFIELD_NO_VALIDATE
-#define FF_VD(idx)                              \
-if (idx >= MAX) { return false; }
+#define FF_VD(idx, ret)
+#elif !defined(FLAGFIELD_DEBUG)
+#define FF_VD(idx, ret)                         \
+if (idx >= MAX) { return ret; }
 #else
-#define FF_VD(idx)                              \
+#define FF_VD(idx, ret)                         \
 if (idx >= MAX) { throw std::out_of_range(      \
-    "[FlagField] - ERROR: Index out of range!"  \
-    return false;                               \
-); }
+    "[FlagField] - ERROR: Index out of range!");\
+    return ret;                                 \
+}
 #endif
 
 /// @brief A class to manage a field of flags.
@@ -158,13 +160,13 @@ public:
 
     /// @brief Set a flag at the given index.
     void set(const E& index) {
-        FF_VD(index);
+        FF_VD(index,);
         FF_DEBUG("Set flag at index: " << index);
         flags_[index / 8] |= (1 << (index % 8));
     }
 
     /// @brief Sets flags from another FlagField.
-    void set(const FLagField& other) {
+    void set(const FlagField& other) {
         FF_DEBUG("Set flags from another FlagField.");
         for (size_t i = 0; i < sizeBytes(); i++) {
             flags_[i] |= other.flags_[i];
@@ -188,7 +190,7 @@ public:
 
     /// @brief Clears a flag at the given index.
     void clear(const E& index) {
-        FF_VD(index);
+        FF_VD(index,);
         FF_DEBUG("Cleared flag at index: " << index);
         flags_[index / 8] &= ~(1 << (index % 8));
     }
@@ -218,7 +220,7 @@ public:
 
     /// @brief Toggles a flag at the given index.
     void toggle(const E& index) {
-        FF_VD(index);
+        FF_VD(index,);
         FF_DEBUG("Toggled flag at index: " << index);
         flags_[index / 8] ^= (1 << (index % 8));
     }
@@ -250,7 +252,7 @@ public:
 
     /// @brief Returns `true` if the flag at the given index is set.
     bool isSet(const E& index) {
-        FF_VD(index);
+        FF_VD(index, false);
         FF_DEBUG("Checking if flag at index " << index << " is set.");
         return flags_[index / 8] & (1 << (index % 8));
     }
@@ -386,7 +388,7 @@ public:
 
     /// @brief Sets matching flags.
     FlagField& operator&=(const E& idx) {
-        FF_VD(idx); FF_DEBUG("Bitwise AND at index: " << idx);
+        FF_DEBUG("Bitwise AND at index: " << idx);
         bool keep = this->isSet(idx);
         this->clear();
         if (keep) { this->set(idx); }
@@ -394,7 +396,7 @@ public:
     }
     /// @brief Sets matching flags.
     FlagField& operator&=(const FlagField& other) {
-        FF_VD(idx); FF_DEBUG("Bitwise FlagField AND");
+        FF_DEBUG("Bitwise FlagField AND");
         for (size_t i = 0; i < sizeBytes(); i++) {
             flags_[i] &= other.flags_[i];
         }
@@ -430,13 +432,13 @@ public:
 
     /// @brief Sets combined flags.
     FlagField& operator|=(const E& idx) {
-        FF_VD(idx); FF_DEBUG("Bitwise OR at index: " << idx);
+        FF_DEBUG("Bitwise OR at index: " << idx);
         this->set(idx);
         return *this;
     }
     /// @brief Sets combined flags.
     FlagField& operator|=(const FlagField& other) {
-        FF_VD(idx); FF_DEBUG("Bitwise FlagField OR");
+        FF_DEBUG("Bitwise FlagField OR");
         for (size_t i = 0; i < sizeBytes(); i++) {
             flags_[i] |= other.flags_[i];
         }
@@ -566,7 +568,7 @@ public:
 
 /// @subsection Out Stream Operator Overloads
 
-    std::ostream& operator<<(std::ostream& os, const FlagField& ff) {
+    friend std::ostream& operator<<(std::ostream& os, const FlagField& ff) {
         os << "FlagField<" << ff.name() << ", " << ff.size() << ">: [";
         for (size_t i = 0; i < size(); i++) {
             if ((i % 4 == 0) && (i != 0) && (i != ff.size() - 1)) os << " ";
@@ -578,7 +580,7 @@ public:
 /// @section Private Members
 private:
     /// @brief An array of flags on the stack.
-    uint8_t flags_[sizeBytes()];
+    uint8_t flags_[(MAX + 7) / 8];
 
     /// @brief Counts the number of 1s in a byte.
     int countBits_(uint8_t byte) const {
