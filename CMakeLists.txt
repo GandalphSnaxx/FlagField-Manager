@@ -10,17 +10,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Add the include directory
 include_directories(include)
 
-# # Add the source files
-# add_library(FlagField STATIC src/FlagField.cpp)
+# Set the output
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/tests")
 
 # Add the executable for tests
-add_executable(FlagField_Tests tests/FlagField_Tests.cpp)
+# add_executable(FlagField_Tests tests/FlagField_Tests.cpp)
+add_executable(FlagField_Tests tests/flagfield_tests.cpp)
 
-# Link the library to the tests
-target_link_libraries(FlagField_Tests)
-
-# Enable testing
-enable_testing()
-
-# Add a test
-add_test(NAME FlagFieldTests COMMAND FlagField_Tests)
+# Ensure the executable is placed in the tests folder
+set_target_properties(FlagField_Tests PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
