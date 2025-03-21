@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [ {
+        "label": "Build Tests",
+        "command": "cmake",
+        "args": [
+            "-S", ".",
+            "-B", "./build"
+        ],
+        "group": {
+            "kind": "build",
+            "isDefault": true
+        }
+    } ]
+}
