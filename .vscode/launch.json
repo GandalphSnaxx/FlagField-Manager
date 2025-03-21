@@ -3,7 +3,7 @@
     "configurations": [
         {
             "name": "Windows Launch",
-            "program": "${workspaceFolder}/build/Debug/FlagField_Tests.exe",
+            "program": "${workspaceFolder}/tests/Debug/FlagField_Tests.exe",
             "type": "cppvsdbg",
             "request": "launch",
             "cwd": "${workspaceFolder}"
