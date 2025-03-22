@@ -40,6 +40,7 @@ The FlagField Library is a header only C++ library designed to manage a bytefiel
   - `numSetFlags()`: Returns the number of set flags.
 - Operator overloads for faster implementation in your project.
   - Unary Operators:
+  
 | OP | Usage | Description |
 | :---: | :--- | :--- |
 | ! | ```!ff``` | Returns `true` if no flags are set |
@@ -54,6 +55,7 @@ The FlagField Library is a header only C++ library designed to manage a bytefiel
 | ~ | ```~ff``` | Toggles every flag |
 
   - Binary Integer or Enum Operators (`index` is either an integer value or an enum value):
+
 | OP | Usage | Description |
 | :---: | :--- | :--- |
 | = | ```ff = index``` | Clears `ff` then sets the flag at `index` |
@@ -76,6 +78,7 @@ The FlagField Library is a header only C++ library designed to manage a bytefiel
 | ^ | ```ff ^ index``` | Returns a new FlagField `ff ^= index` |
 
   - Binary FlagField Operators:
+
 | OP | Usage | Description |
 | :---: | :--- | :--- |
 | = | ```ff1 = ff2``` | Makes `ff1` identical to `ff2` |
@@ -101,6 +104,7 @@ The FlagField Library is a header only C++ library designed to manage a bytefiel
 | ^ | ```ff1 ^ ff2``` | Returns a new FlagField `ff1 ^= ff2` |
 
   - Other operators:
+
 | OP | Usage | Description |
 | :---: | :--- | :--- |
 | <<= | ```ff <<= bytefield` | Sets this FlagField from a bytefield (either a single byte or a ```std::array```) |
