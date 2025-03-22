@@ -5,160 +5,169 @@ The FlagField Library is a header only C++ library designed to manage a bytefiel
 
 ## Features
 - Manage a bytefield of flags with a single byte or multiple bytes.
-- Constructors:
+- Templates for setting the number of managed flags and ensuring type safety:
+  - `FlagField`: Default constructor that manages 8 flags.
   - `FlagField<x>`: `x` is the number of flags to manage. Default `x` is 8.
-  - `FlagField<x>()`: Default constructor initalizes every flag to 0.
-  - `FlagField<x>(1, 2, 3...)`: Constructs a `FlagField<x>` with pre set flags.
-  - `FlagField(FlagField<x>)`: Constructs a `FlagField<x>` as a copy of another `FlagField`.
+  - `FlagField<ENUM_MAX, enum>`: Constructs a FlagField in reference to an enum that contains flag indices.
+- Constructors:
+  - `FlagField()`: Default constructor initalizes every flag to 0.
+  - `FlagField(1, 2, 3...)`: Constructs a `FlagField` with pre set flags at the given indices.
+  - `FlagField(other)`: Constructs a `FlagField` as a copy of another `FlagField`.
 - Public methods to manipulate flags:
-  - `setFlag`: Set a specific flag.
-  - `clearFlag`: Clear a specific flag.
-  - `toggleFlag`: Toggle the state of a specific flag.
-  - `isFlagSet`: Check if a specific flag is set.
-  - `size`: Gets the number of flags managed.
+  - `set()`: Sets every flag.
+  - `set(index)`: Sets a flag at the given index.
+  - `set(other)`: Sets flags from another FlagField of the same type and size.
+  - `set(i1, i2, i3...)`: Sets flags at each index.
+  - `clear()`: Clears every flag.
+  - `clear(index)`: Clears a flag at the given index.
+  - `clear(other)`: Clears flags from another FlagField of the same type and size.
+  - `clear(i1, i2, i3...)`: Clears flags at each index.
+  - `toggle()`: Flips every flag.
+  - `toggle(index)`: Flips a flag at the given index.
+  - `toggle(other)`: Flips set flags from another FlagField of the same type and size.
+  - `toggle(i1, i2, i3...)`: Flips flags at each index.
+  - `isSet()`: Returns `true` if every flag is set.
+  - `isSet(index)`: Returns `true` if the flag at the given index is set.
+  - `isSet(other)`: Returns `true` if every set flag in the other FlagField is set.
+  - `isSet(i1, i2, i3...)`: Returns `true` if every flag at the given indices is set.
+  - `isNSet()`: Returns `true` if every flag is not set.
+  - `isNSet(index)`: Returns `true` if the flag at the given index is not set.
+  - `isNSet(other)`: Returns `true` if every set flag in the other FlagField is not set.
+  - `isNSet(i1, i2, i3...)`: Returns `true` if every flag at the given indices is not set.
+  - `size()`: Returns the number of managed flags.
+  - `sizeBytes()`: Returns the number of managed bytes.
+  - `name()`: Gets the name of the referenced type.
+  - `numSetFlags()`: Returns the number of set flags.
 - Operator overloads for faster implementation in your project.
-  - Binary integer operators `a @ b` where `a` is a FlagField object, `b` is an integer type representing a flag number, and `@` is an operator below:
-    - `=`: Clears `a` and sets flag `b`.
-    - `==`: Returns `true` if only flag `b` is set.
-    - `&`: Returns `true` if flag number `b` is set.
-    - `&=`: Clears flag number `b`.
-    - `|=`: Sets flag number `b`.
-    - `^=`: Flips flag number `b`.
-    - `+=`: Sets flag number `b` (same as `|=`).
-    - `-=`: Clears flag number `b`.
-  - Binary boolean operators `a @ b` where `a` is a FlagField object, `b` is a boolean type, and `@` is an operator below:
-    - `*`: Makes a new FlagField object with the same flags as `a` if `b` is `true` or no flags if `b` is `false`.
-    - `*=`: Clears every flag in `a` if `b` is `false`.
-  - Binary FlagField operators `a @ b` where `a` and `b` are FlagField objects and `@` is an operator below:
-    - `=`: Makes `a` match `b`.
-    - `&`: Makes a new FlagField object with `a` and `b`'s matching flags.
-    - `&=`: Clear assignment operator. Clears every matching `a` and `b` flag in `a`.
-    - `|`: Makes a new FlagField object with both `a` and `b`'s flags.
-    - `|=`: Set assignment operator. Sets every `b` flag in `a`.
-    - `^`: Makes a new FlagField object with `a` XOR `b` flags.
-    - `^=`: Set assignment operator. Toggles every `b` flag in `a`.
-    - `==`: Returns `true` if `a` and `b` have the same flags set.
-    - `!=`: Returns `false` if `a` and `b` have the same flags set.
-    - `>`: Returns `true` if `a` has more flags set than `b`.
-    - `<`: Returns `true` if `a` has less flags set than `b`.
-    - `>=`: Returns `true` if `a` has more or the same number of flags set than `b`.
-    - `<=`: Returns `true` if `a` has less or the same number of flags set than `b`.
-    - `+`: Makes a new FlagField object with both `a` and `b`'s flags. Same as `|`.
-    - `-`: Makes a new FlagField object with `b`'s flags removed from `a`.
-    - `+=`: Set assignment operator. Sets every `b` flag in `a`. Same as `|=`.
-    - `-=`: Clear assignment operator. Clears every `b` flag in `a`. Same as `&=`.
-  - Integer member access operators `a(b)` or `a[b]` where `a` is a FlagField object and `b` is an integer type representing a flag number.
-    - `()`: Returns `true` if flag number `b` is set.
-    - `[]`: Returns `true` if flag number `b` is set.
-  - Unary prefix operators `@a` where `@` is an operator below:
-    - `!`: Returns true if no flags are set.
-    - `+`: TODO
-    - `-`: Casts `a` to an unsigned int.
-    - `~`: Flips every flag in `a`.
-    - `&`: Gets a pointer to `a`.
-    - `*`: TODO
-    - `(bool)`: Explicit cast `a` to `false` if no flags are set.
-    - `(uint32_t)`: Explicit casts `a` to `uint32_t`.
-  - Unary postfix operators `a@` where `@` is an operator below:
-    - `++`: Sets every flag in `a`.
-    - `--`: Clears every flag in `a`.
+  - Unary Operators:
+| OP | Usage | Description |
+| :---: | :--- | :--- |
+| ! | ```!ff``` | Returns `true` if no flags are set |
+| & | ```&ff``` | Not changed - Gets a pointer to the `ff` |
+| * | ```*ff``` | Returns the address of the byte array |
+| + | ```+ff``` | Sets every flag |
+| ++ | ```++ff``` | Sets the first unset flag |
+| ++ | ```ff++``` | Sets the first unset flag |
+| - | ```-ff``` | Clears every flag |
+| -- | ```--ff``` | Clears the first set flag |
+| -- | ```ff--``` | Clears the first set flag |
+| ~ | ```~ff``` | Toggles every flag |
+
+  - Binary Integer or Enum Operators (`index` is either an integer value or an enum value):
+| OP | Usage | Description |
+| :---: | :--- | :--- |
+| = | ```ff = index``` | Clears `ff` then sets the flag at `index` |
+| , | ```ff, index``` | Sets the flag at `index` |
+| == | ```ff == index``` | Returns `true` if the flag at `index` is set |
+| != | ```ff != index``` | Returns `true` if the flag at `index` is not set |
+| && | ```ff && index``` | Returns `true` if the flag at the given index is set |
+| &= | ```ff &= index``` | Clears the flag at `index` |
+| & | ```ff & index``` | Returns a new FlagField `ff &= index` |
+| \|\| | ```ff \|\| index``` | Returns `true` if the flag at `index` is set |
+| \|= | ```ff \|= index``` | Clears `ff` then sets the flag at `index` if it was set |
+| \| | ```ff \| index``` | Returns a new FlagField `ff \|= index` |
+| ( ) | ```ff(i1, i2, i3...)``` | Returns `true` if every flag at the given indices are set |
+| [ ] | ```ff[index]``` | Returns `index` if the flag at `index` is set |
+| += | ```ff += index``` | Sets the flag at `index` |
+| + | ```ff + index``` | Returns a new FlagField `ff += index` |
+| -= | ```ff -= index``` | Clears the flag at `index` |
+| - | ```ff - index``` | Returns a new FlagField `ff -= index` |
+| ^= | ```ff ^= index``` | Toggles the flag at `index` |
+| ^ | ```ff ^ index``` | Returns a new FlagField `ff ^= index` |
+
+  - Binary FlagField Operators:
+| OP | Usage | Description |
+| :---: | :--- | :--- |
+| = | ```ff1 = ff2``` | Makes `ff1` identical to `ff2` |
+| , | ```ff1, ff2``` | Sets `ff2`'s flags in `ff1` |
+| == | ```ff1 == ff2``` | Returns `true` if every flag matches |
+| != | ```ff1 != ff2``` | Returns `true` if every set flag in the other FlagField is not set |
+| < | ```ff1 < ff2``` | Compares the number of set flags |
+| > | ```ff1 < ff2``` | Compares the number of set flags |
+| <= | ```ff1 < ff2``` | Compares the number of set flags |
+| >= | ```ff1 < ff2``` | Compares the number of set flags |
+| && | ```ff1 && ff2``` | Returns `true` if every set flag in `ff2` is set in `ff1` |
+| &= | ```ff1 &= ff2``` | Performs bitwise `AND` for every flag |
+| & | ```ff1 & ff2``` | Returns a new FlagField `ff1 &= ff2` |
+| \|\| | ```ff1 \|\| ff2``` | Returns `true` if any set flag index matches |
+| \|= | ```ff1 \|= ff2``` | Sets only matching flags |
+| \| | ```ff1 \| ff2``` | Returns a new FlagField `ff1 \|= ff2` |
+| ( ) | ```ff1(ff2)``` | Returns `true` if every set flag in `ff2` is set in `ff1` |
+| += | ```ff1 += ff2``` | Sets `ff1`'s flags set in `ff2` |
+| + | ```ff1 + ff2``` | Returns a new FlagField `ff1 += ff2` |
+| -= | ```ff1 -= ff2``` | Clears `ff1`'s flags set in `ff2` |
+| - | ```ff1 - ff2``` | Returns a new FlagField `ff1 -= ff2` |
+| ^= | ```ff1 ^= ff2``` | Toggles `ff1`'s flags set in `ff2` |
+| ^ | ```ff1 ^ ff2``` | Returns a new FlagField `ff1 ^= ff2` |
+
+  - Other operators:
+| OP | Usage | Description |
+| :---: | :--- | :--- |
+| <<= | ```ff <<= bytefield` | Sets this FlagField from a bytefield (either a single byte or a ```std::array```) |
+| *= | ```ff *= bool``` | Clears the FlagField if `false` |
+| * | ```ff * bool``` | Returns a new FlagField `ff *= bool` |
+| << | ```std::cout << ff``` | Adds `"FlagField<size(), name()>: [...]"` to an out stream where ... is `.` for unset flags and `\|` for set flags |
+
+- Defines can be set for validation and/or debugging:
+  - `FLAGFIELD_NO_VALIDATE`: Define for disabling index validation.
+  - `FLAGFIELD_DEBUG`: Define for enabling print statements whenever a function or operator is used.
 - Easy integration with existing C++ projects.
 
 ## Installation
-To use the ByteField Library, you can clone the repository and build it using CMake. Follow these steps:
+To use the ByteField Library, you copy FlagField.hpp into your project.
+
+## Testing
 
 1. Clone the repository:
    ```
-   git clone https://github.com/yourusername/flagfield-library.git
+   git clone https://github.com/GandalphSnaxx/FlagField-Manager.git
    ```
 
 2. Navigate to the project directory:
    ```
-   cd flagfield-library
+   cd the/file/you/specified
    ```
 
-3. Create a build directory and navigate into it:
+3. Run the config and compile script:
    ```
-   mkdir build
-   cd build
-   ```
-
-4. Run CMake to configure the project:
-   ```
-   cmake ..
+   .\config_and_compile.bat
    ```
 
-5. Build the project:
+4. Run the generated executable:
    ```
-   cmake --build .
+   .\tests\Debug\FlagField_Tests.exe
    ```
 
 ## Usage
 To use the FlagField class in your project, include the header file and create an instance of the class. Here is a simple example:
 
 ```cpp
-#include "FlagField.hpp"
+// #define FLAGFIELD_DEBUG // Enables print statements for debugging
+// #define FLAGFIELD_NO_VALIDATE // Saves a small amount of time
+#include <FlagField.hpp>
 
-constexpr enum flags {
-   FLAG_A,  // flag 0
-   FLAG_B,  // flag 1
-   FLAG_C,  // flag 2
-   FLAG_D}; // flag 3
-
+typedef enum Flags {
+   FLAG_A,
+   FLAG_B,
+   FLAG_C,
+   FLAG_D,
+   FLAG_MAX
+} Flags;
 
 int main() {
-   FlagField ff1, ff2; // Makes two empty FlagField objects
-   FlagField(FLAG_C, FLAG_D) ff3; // Makes a new FlagField object with FLAG_C and FLAG_D set
-   FlagField<uint64_t> bigField; // Makes a FlagField object with 64 flags. Default is 32.
+   FlagField<FLAG_MAX, Flags> ff;
 
-   ff1.setFlag(FLAG_A); // Set the first flag
-   if (ff1.isFlagSet(FLAG_A)) { /* Flag is set */ }
+   ff += FLAG_A;
+   ff += FLAG_C;
 
-   ff1 = FLAG_B; // Set only flag b
-   if (ff1 & FLAG_B) { /* Flag is set */ }
+   if (ff(FLAG_A, FLAG_B)) { /* do something */ }
+
+   -ff;
+
+   bool setIf = true;
+   ff += FLAG_A * setIf;
 
    return 0;
-}
-```
-
-## More Usage
-Using enums, you can name flags for your project. Using operator overloads, you can manipulate a FlagField easily. Here is an example:
-
-```cpp
-#include <ostream>
-#include "FlagField.hpp"
-
-class ExampleClass {
-   public:
-   ExampleClass() { config = INIT_FLAG; } // Only INIT_FLAG is set
-
-   FlagField config;
-   std::vector<uint32_t> list{};
-
-   enum ConfigFlags { // Config flag enum for this class
-      INIT_FLAG,
-      BLACKLIST_FLAG,
-      WHITELIST_FLAG}
-
-   void addWhitelist(uint32_t data) {
-      if (config & BLACKLIST_FLAG) { return; } // Checks if BLACKLIST_FLAG is set
-      config += WHITELIST_FLAG; // Sets WHITELIST_FLAG
-      list.push_back(data); }
-   void addBlacklist(uint32_t data) {
-      if (config & WHITELIST_FLAG) { return; } // Checks if WHITELIST_FLAG is set
-      config += BLACKLIST_FLAG; // Sets BLACKLIST_FLAG
-      list.push_back(data);
-   }
-}
-
-int main() {
-   ExampleClass ex1, ex2;
-   if (!ex1.config || !ex2.config) { std::cerr << "Somehow not initalized!"; }
-   ex1.addWhitelist(10);
-   ex2.addBlacklist(20);
-   ex2.addWhitelist(40);
-   std::cout << (ex1.config != ex2.config) << std::endl; // Output: 1
-   FlagField moreFlags = 1 | 2 | 3; // Sets flags 1, 2, and 3 in moreFlags
 }
 ```
 
