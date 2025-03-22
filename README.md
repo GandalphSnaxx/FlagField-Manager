@@ -40,7 +40,7 @@ The FlagField Library is a header only C++ library designed to manage a bytefiel
   - `numSetFlags()`: Returns the number of set flags.
 - Operator overloads for faster implementation in your project.
   - Unary Operators:
-  
+
 | OP | Usage | Description |
 | :---: | :--- | :--- |
 | ! | ```!ff``` | Returns `true` if no flags are set |
@@ -107,7 +107,7 @@ The FlagField Library is a header only C++ library designed to manage a bytefiel
 
 | OP | Usage | Description |
 | :---: | :--- | :--- |
-| <<= | ```ff <<= bytefield` | Sets this FlagField from a bytefield (either a single byte or a ```std::array```) |
+| <<= | ```ff <<= bytefield``` | Sets this FlagField from a bytefield (either a single byte or a ```std::array```) |
 | *= | ```ff *= bool``` | Clears the FlagField if `false` |
 | * | ```ff * bool``` | Returns a new FlagField `ff *= bool` |
 | << | ```std::cout << ff``` | Adds `"FlagField<size(), name()>: [...]"` to an out stream where ... is `.` for unset flags and `\|` for set flags |
