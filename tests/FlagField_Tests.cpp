@@ -1,8 +1,9 @@
 #include <iostream>
 #include <cassert>
+#include <chrono>
 
-#define FLAGFIELD_DEBUG
-// #define FLAGFIELD_NO_VALIDATE
+// #define FLAGFIELD_DEBUG
+#define FLAGFIELD_NO_VALIDATE // Saves ~200 microseconds
 #include <FlagField.hpp>
 
 typedef enum BasicFlags {
@@ -554,6 +555,10 @@ void run_all_tests() {
 }
 
 int main() {
+    auto start = std::chrono::system_clock::now();
     run_all_tests();
+    auto end = std::chrono::system_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout << "Elapsed time: " << elapsed.count() << " microseconds" << std::endl;
     return 0;
 }
