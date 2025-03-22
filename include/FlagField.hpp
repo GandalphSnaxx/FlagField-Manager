@@ -142,7 +142,7 @@ public:
         clear_();
 
         *this = FlagField(idxs...);
-        set((E)idx);
+        set_((E)idx);
     }
 
     /// @brief Default constructor.
