@@ -46,7 +46,7 @@
  * /=	| Division assignment	    | ?
  * <	| Less than	                | Compares number of set flags
  * <<	| Left shift	            | ?
- * <<=	| Left shift assignment	    | ?
+ * <<=	| Left shift assignment	    | Sets this FlagField from a bytefield.
  * <=	| Less than or equal to	    | Compares number of set flags
  * =	| Assignment	            | Clear then set
  * ==	| Equality	                | uint: Returns `true` if flag is set
@@ -70,7 +70,7 @@
 // #define FLAGFIELD_NO_VALIDATE
 
 #include <cstdint>
-#include <stdarg.h>
+#include <array>
 #include <stdexcept>
 #include <ostream>
 
@@ -261,6 +261,36 @@ public:
     /// @brief Returns `true` if every flag at every index is set.
     template <typename... O> bool isSet(const E& index, const O&... indices) const {
         return isSet(index) && isSet(indices...);
+    }
+
+    /// @brief Returns `true` if no flags are set.
+    bool isNSet() const {
+        FF_DEBUG("Checking if no flags are set.");
+        return numSetFlags() == 0;
+    }
+
+    /// @brief Returns `true` if the flag at the given index is not set.
+    bool isNSet(const E& index) const {
+        FF_VD(index, false);
+        FF_DEBUG("Checking if flag at index " << index << " is not set");
+        return !isSet_(index);
+    }
+
+    /// @brief Returns `true` if no flags match.
+    bool isNSet(const FlagField& other) const {
+        FF_DEBUG("Checking if no flags match.");
+        const uint8_t mask = (1 << size() % 8) - 1;
+        for (size_t i = 0; i < sizeBytes() - (size() % 8 > 0); i++) {
+            if ((flags_[i] & other.flags_[i]) != 0) return false;
+        }
+        return (flags_[sizeBytes() - 1] & 
+            other.flags_[sizeBytes() - 1] &
+            mask) == 0;
+    }
+
+    /// @brief Returns `true` if no flags at the given indices are set.
+    template <class... Fs> bool isNSet(const E& idx, const Fs&... idxs) const {
+        return isNSet(idx) && isNSet(idxs...);
     }
 
 /// @subsection FlagField State Functions
@@ -549,6 +579,35 @@ public:
         if (this != &other) {
             clear_();
             set_(other);
+        }
+        return *this;
+    }
+
+    /// @brief Sets this FlagField from a bytefield.
+    /// @note Only converts up to 8 flags.
+    FlagField& operator<<=(const uint8_t& byte) {
+        FF_DEBUG("<<= 1 byte bytefield");
+        clear_();
+        flags_[0] = byte;
+        return *this;
+    }
+
+    // Removed for safety
+    // /// @brief Sets this FlagField from a bytefield.
+    // /// @warning If the byte array is shorter than the number of managed bytes, unexpected errors can occur!
+    // FlagField& operator<<=(const uint8_t* bytes) {
+    //     FF_DEBUG("<<= bytefield");
+    //     for (size_t i = 0; i < sizeBytes(); i++) {
+    //         flags_[i] = bytes[i];
+    //     }
+    //     return *this;
+    // }
+
+    /// @brief Sets this FlagField from a bytefield.
+    FlagField& operator<<=(const std::array<uint8_t, (MAX + 7) / 8>& bytes) {
+        FF_DEBUG("<<= std::array<uint8_t, " << sizeBytes() << ">");
+        for (size_t i = 0; i < sizeBytes(); i++) {
+            flags_[i] = bytes[i];
         }
         return *this;
     }
