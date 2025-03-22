@@ -156,6 +156,20 @@ void test_functions() {
         assert(ff3.isSet(1, 2) == false);
         assert(ff4.isSet(2, 3));
     }
+    {   std::cout << "Testing isNSet()" << std::endl;
+        FlagField ff1(0, 1, 2, 3), ff2(4, 5, 6, 7), ff3;
+        assert(ff1.isNSet() == false);
+        assert(ff3.isNSet() == true);
+
+        assert(ff1.isNSet(3) == false);
+        assert(ff1.isNSet(4) == true);
+
+        assert(ff1.isNSet(ff1) == false);
+        assert(ff1.isNSet(ff2) == true);
+
+        assert(ff1.isNSet(3, 4, 5, 6) == false);
+        assert(ff1.isNSet(4, 5, 6, 7) == true);
+    }
     {   std::cout << "Testing other functions" << std::endl;
         FlagField<4> ff4;
         FlagField<1024> ff1024;
@@ -449,6 +463,85 @@ void test_binary_operators() {
         assert(ff4.isSet(FlagC) == true);
         std::cout << ff4 << " * false = " << ff3 << std::endl;
     }
+    {   std::cout << "Testing toggle operators..." << std::endl;
+        FlagField ff1(0, 1), ff2(1, 2), ff5;
+        FlagField<BasicMAX, BasicFlags> ff3(FlagA), ff4(FlagB, FlagC), ff6;
+
+        assert(ff1.isSet(1) == true);
+        ff1 ^= 1;
+        assert(ff1.isSet(1) == false);
+        assert(ff3.isSet(FlagB) == false);
+        ff3 ^= FlagB;
+        assert(ff3.isSet(FlagB) == true);
+
+        assert(ff1.isSet(2) == false);
+        ff1 ^= ff2;
+        assert(ff1.isSet(2) == true);
+        assert(ff3.isSet(FlagC) == false);
+        ff3 ^= ff4;
+        assert(ff3.isSet(FlagC) == true);
+
+        assert(ff2.isSet(0) == false);
+        ff1 = ff2 ^ 0;
+        assert(ff1.isSet(0) == true);
+        assert(ff2.isSet(0) == false);
+
+        assert(ff4.isSet(FlagA) == false);
+        ff3 = ff4 ^ FlagA;
+        assert(ff3.isSet(FlagA) == true);
+        assert(ff4.isSet(FlagA) == false);
+
+        ff5 = ff1 ^ ff2;
+        std::cout << ff1 << " ^ " << ff2 << " = " << ff5;
+
+        ff6 = ff3 ^ ff4;
+        std::cout << ff3 << " ^ " << ff4 << " = " << ff6;
+    }
+}
+
+void test_bytefield_conversion() {
+    {   std::cout << "Testing bytefield conversions..." << std::endl;
+        FlagField ff1;
+        uint8_t bytefield = 0x0F;
+        uint8_t* pBytefield = &bytefield;
+        std::array<uint8_t, 1> arrBytefield = { 0x0F };
+        ff1 <<= bytefield;
+        assert(ff1.isSet(0, 1, 2, 3));
+        assert(ff1.isNSet(4, 5, 6, 7));
+
+        // ff1.clear();
+        // ff1 <<= pBytefield;
+        // assert(ff1.isSet(0, 1, 2, 3));
+        // assert(ff1.isNSet(4, 5, 6, 7));
+
+        ff1.clear();
+        ff1 <<= arrBytefield;
+        assert(ff1.isSet(0, 1, 2, 3));
+        assert(ff1.isNSet(4, 5, 6, 7));
+
+        FlagField<1024> bigff;
+        std::array<uint8_t, 128> bigBytefieldArr = {
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+            0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00,
+        };
+        std::cout << "Before: " << bigff << std::endl;
+        bigff <<= bigBytefieldArr;
+        std::cout << "After: " << bigff << std::endl;
+    }
 }
 
 void run_all_tests() {
@@ -456,7 +549,7 @@ void run_all_tests() {
     test_functions();
     test_unary_operators();
     test_binary_operators();
-    // test_member_access_operators();
+    test_bytefield_conversion();
     std::cout << "All tests passed!" << std::endl;
 }
 
