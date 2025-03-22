@@ -425,16 +425,16 @@ public:
         return isSet_(other); 
     }
 
-    /// @brief Returns `true` if the flag at the given index is not set.
+    /// @brief Returns `true` if the flag at `idx` is not set.
     bool operator!=(const E& idx) const { 
         FF_VD(idx, false);
         FF_DEBUG("!= " << idx);
-        return !isSet_(idx); 
+        return isNSet_(idx); 
     }
-    /// @brief Returns `true` if the flag at the given index is not set.
+    /// @brief Returns `true` if every set flag in other is not set.
     bool operator!=(const FlagField& other) const { 
         FF_DEBUG("!= other");
-        return !isSet_(other); 
+        return isNSet_(other); 
     }
 
     /// @brief Compares the number of set flags.
