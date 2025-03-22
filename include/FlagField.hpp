@@ -111,34 +111,45 @@ if (idx >= MAX) { throw std::out_of_range(      \
 /// @tparam E The enum to set as a reference. Default = `size_t`.
 template <size_t MAX = 8, class E = size_t>
 class FlagField {
-    static_assert(std::is_enum<E>::value || std::is_integral<E>::value,
-        "[FlagField] - ERROR: FlagField must use an enum or integral type!");
+    static_assert(std::is_enum<E>::value || std::is_same<E, size_t>::value,
+        "[FlagField] - ERROR: FlagField must use an enum or size_t type!");
+    // static_assert(std::is_enum<E>::value || std::is_integral<E>::value,
+    //     "[FlagField] - ERROR: FlagField must use an enum or integral type!");
     static_assert(MAX > 0, "[FlagField] - ERROR: Number of managed flags must be > 0!");
 public:
 /// @section Constructors and Deconstructors
-    /// @brief Explicit constructor from a list of flags.
-    template <typename... Flags>
-    explicit FlagField(Flags... flags) {
-        FF_DEBUG("Creating FlagField from a list of flags with size: " << size());
-        // Initialize flags array to zero
-        clear();
-        // Set the flag arguements
-        set(flags...);
-    }
-
     /// @brief Copy constructor. 
-    FlagField(const FlagField<MAX, E> &other) {
+    FlagField(const FlagField& other) {
         FF_DEBUG("Creating FlagField from another FlagField both with size: " << size());
         // Initialize flags array to zero
-        clear();
-        set(other);
+        clear_();
+        set_(other);
+    }
+
+    /// @brief Explicit single flag constructor. 
+    explicit FlagField(const size_t& idx) {
+        FF_DEBUG("Creating a FlagField with size: " << size() << ", and flag set at index: " << idx);
+        // Initialize flags array to zero
+        clear_();
+        set_((E)idx);
+    }
+
+    /// @brief Explicit constructor from a list of flags.
+    template <typename... Fs>
+    explicit FlagField(const size_t& idx, const Fs&... idxs) {
+        FF_DEBUG("Creating FlagField from a list of flags with size: " << size());
+        // Initialize flags array to zero
+        clear_();
+
+        *this = FlagField(idxs...);
+        set((E)idx);
     }
 
     /// @brief Default constructor.
     FlagField() {
         FF_DEBUG("Creating FlagField with default constructor and size: " << size());
         // Initialize flags array to zero
-        clear(); 
+        clear_(); 
     }
 
     /// @brief Deconstructor.
@@ -153,24 +164,20 @@ public:
     /// @brief Sets every flag.
     void set() {
         FF_DEBUG("Setting every flag.");
-        for (size_t i = 0; i < sizeBytes(); i++) {
-            flags_[i] = 0xFF;
-        }
+        set_();
     }
 
     /// @brief Set a flag at the given index.
     void set(const E& index) {
         FF_VD(index,);
         FF_DEBUG("Set flag at index: " << index);
-        flags_[index / 8] |= (1 << (index % 8));
+        set_(index);
     }
 
     /// @brief Sets flags from another FlagField.
     void set(const FlagField& other) {
         FF_DEBUG("Set flags from another FlagField.");
-        for (size_t i = 0; i < sizeBytes(); i++) {
-            flags_[i] |= other.flags_[i];
-        }
+        set_(other);
     }
 
     /// @brief Sets a list of flags at the given indices.
@@ -183,24 +190,20 @@ public:
     /// @brief Clears every flag.
     void clear() {
         FF_DEBUG("Clearing every flag.");
-        for (size_t i = 0; i < sizeBytes(); i++) {
-            flags_[i] = 0;
-        }
+        clear_();
     }
 
     /// @brief Clears a flag at the given index.
     void clear(const E& index) {
         FF_VD(index,);
         FF_DEBUG("Cleared flag at index: " << index);
-        flags_[index / 8] &= ~(1 << (index % 8));
+        clear_(index);
     }
 
     /// @brief Clears flags from another FlagField.
     void clear(const FlagField& other) {
         FF_DEBUG("Clearing flags from another FlagField.");
-        for (size_t i = 0; i < sizeBytes(); i++) {
-            flags_[i] &= ~other.flags_[i];
-        }
+        clear_(other);
     }
 
     /// @brief Clears flags from a list of flag indices.
@@ -213,24 +216,20 @@ public:
     /// @brief Toggles every flag.
     void toggle() {
         FF_DEBUG("Toggling every flag.");
-        for (size_t i = 0; i < sizeBytes(); i++) {
-            flags_[i] ^= 0xFF;
-        }
+        toggle_();
     }
 
     /// @brief Toggles a flag at the given index.
     void toggle(const E& index) {
         FF_VD(index,);
         FF_DEBUG("Toggled flag at index: " << index);
-        flags_[index / 8] ^= (1 << (index % 8));
+        toggle_(index);
     }
 
     /// @brief Toggles flags from another FlagField.
     void toggle(const FlagField& other) {
-        FF_DEBUG("Clearing flags from another FlagField.");
-        for (size_t i = 0; i < sizeBytes(); i++) {
-            flags_[i] ^= other.flags_[i];
-        }
+        FF_DEBUG("Toggling flags from another FlagField.");
+        toggle_(other);
     }
 
     /// @brief Toggles flags from a list of flag indices.
@@ -241,37 +240,26 @@ public:
 /// @subsection Query Functions
 
     /// @brief Returns `true` if every flag is set.
-    bool isSet() {
-        constexpr uint8_t mask = (1 << size() % 8) - 1;
-        for (size_t i = 0; i < sizeBytes() - 1; i++) {
-            if (flags_[i] != 0xFF) return false;
-        }
-        if (flags_[sizeBytes() - 1] & mask != mask) return false;
-        return true;
+    bool isSet() const {
+        FF_DEBUG("Checking if all " << size() << " flags are set.");
+        return isSet_();
     }
 
     /// @brief Returns `true` if the flag at the given index is set.
-    bool isSet(const E& index) {
+    bool isSet(const E& index) const {
         FF_VD(index, false);
         FF_DEBUG("Checking if flag at index " << index << " is set.");
-        return flags_[index / 8] & (1 << (index % 8));
+        return isSet_(index);
     }
 
     /// @brief Returns `true` if the other FlagField's flags are set in this FlagField.
-    bool isSet(const FlagField& other) {
-        constexpr uint8_t mask = (1 << size() % 8) - 1;
-        // Check that every byte except the last matches
-        for (size_t i = 0; i < sizeBytes() - 1; i++) {
-            if (flags_[i] != other.flags_[i]) return false;
-        }
-        // Check the last byte after masking out the unmanaged flags
-        if ((flags_[sizeBytes() - 1]        & lastMask) != 
-            (other.flags_[sizeBytes() - 1]  & lastMask)) return false;
-        return true;
+    bool isSet(const FlagField& other) const { 
+        FF_DEBUG("Checking if flags match another FlagField's flags.");
+        return isSet_(other); 
     }
 
     /// @brief Returns `true` if every flag at every index is set.
-    template <typename... O> bool isSet(const E& index, const O&... indices) {
+    template <typename... O> bool isSet(const E& index, const O&... indices) const {
         return isSet(index) && isSet(indices...);
     }
 
@@ -280,7 +268,7 @@ public:
     /// @brief Gets the number of managed flags.
     constexpr size_t size() const { return MAX; }
 
-    /// @brief Gets the number of bytes managed.w
+    /// @brief Gets the number of bytes managed.
     constexpr size_t sizeBytes() const { return (MAX + 7) / 8; }
 
     constexpr const char* name() const { return typeid(E).name(); }
@@ -288,8 +276,12 @@ public:
     /// @brief Counts the number of set flags.
     size_t numSetFlags() const {
         size_t count = 0;
-        for (size_t i = 0; i < sizeBytes(); i++) { count += countBits_(flags_[i]); }
-        return count;
+        uint8_t mask = (1 << size() % 8) - 1;
+        if (mask == 0) mask = 0xFF;
+        for (size_t i = 0; i < sizeBytes() - 1; i++) { 
+            count += countBits_(flags_[i]); 
+        }
+        return count += countBits_(flags_[sizeBytes() - 1] & mask);
     }
 
 /// @section Operator Overloads
@@ -297,21 +289,32 @@ public:
 /// @subsection Unary Operators
 
     /// @brief Returns `true` if no flags are set.
-    bool operator!() const { return !this->isSet(); }
+    bool operator!() const { 
+        FF_DEBUG("!");
+        return !isSet_(); 
+    }
 
     /// @brief Returns a pointer to the flag byte array.
-    uint8_t* operator*() const { return &flags_; }
+    uint8_t* operator*() { 
+        FF_DEBUG("*");
+        return &flags_[0]; 
+    }
 
     /// @brief Sets every flag.
-    FlagField& operator+() { set(); return *this; }
+    FlagField& operator+() { 
+        FF_DEBUG("+");
+        set_(); 
+        return *this; 
+    }
 
     /// @brief Sets the first unset flag.
     FlagField& operator++() { 
         size_t idx = 0;
         while(idx < size()) {
             // If flag is not set, set it and return
-            if (!this->isSet(idx)) { 
-                this->set(idx); 
+            if (!isSet_(static_cast<E>(idx))) { 
+                FF_DEBUG("++ Setting the first unset flag at index: " << idx);
+                set_(static_cast<E>(idx)); 
                 return *this; 
             }
             idx++;
@@ -320,23 +323,27 @@ public:
         return *this;
     }
 
-    /// @brief Makes a new FlagField copy with the first unset flag set.
-    FlagField operator++(int) {
-        FlagField x = *this;
-        x++;
-        return x;
+    /// @brief Sets the first cleared flag.
+    FlagField& operator++(int) {
+        this->operator++();
+        return *this;
     }
 
     /// @brief Clears every flag.
-    FlagField& operator-() { clear(); return *this; }
+    FlagField& operator-() { 
+        FF_DEBUG("-");
+        clear_(); 
+        return *this; 
+    }
 
     /// @brief Clears the first set flag.
     FlagField& operator--() {
         size_t idx = 0;
         while(idx < size()) {
             // If flag is set, clear it and return
-            if (this->isSet(idx)) { 
-                this->clear(idx); 
+            if (isSet_(static_cast<E>(idx))) { 
+                FF_DEBUG("-- Clearing the first set flag at index: " << idx);
+                clear_(static_cast<E>(idx)); 
                 return *this; 
             }
             idx++;
@@ -345,58 +352,112 @@ public:
         return *this;
     }
 
-    /// @brief Makes a new FlagField copy with the first set flag cleared.
-    FlagField operator--(int) {
-        FlagField x = *this;
-        x--;
-        return x;
+    /// @brief Clears the first set flag.
+    FlagField& operator--(int) {
+        this->operator--();
+        return *this;
     }
 
     /// @brief Toggles every flag.
-    FlagField& operator~() { this->toggle(); return *this; }
+    FlagField& operator~() { 
+        FF_DEBUG("~");
+        toggle_(); 
+        return *this; 
+    }
 
 /// @subsection Binary Operators
 
     /// @brief Sets flags at the given indices.
-    FlagField& operator,(const E& idx) { this->set(idx); return *this; }
+    FlagField& operator,(const E& idx) { 
+        FF_VD(idx, *this);
+        FF_DEBUG(", " << idx);
+        set_(idx); 
+        return *this; 
+    }
     /// @brief Sets flags at the given indices.
-    FlagField& operator,(const FlagField& idx) { this->set(idx); return *this; }
+    FlagField& operator,(const FlagField& other) { 
+        FF_DEBUG(", other");
+        set_(other); 
+        return *this; 
+    }
 
 /// @subsubsection Comparison Operator Functions
 
     /// @brief Returns `true` if the indexed flag is set.
-    bool operator==(const E& idx) const { return this->isSet(idx); }
+    bool operator==(const E& idx) const { 
+        FF_VD(idx, false);
+        FF_DEBUG("== " << idx);
+        return isSet_(idx); 
+    }
     /// @brief Returns `true` if every flag matches.
-    bool operator==(const FlagField& other) const { return this->isSet(other); }
+    bool operator==(const FlagField& other) const { 
+        FF_DEBUG("== other");
+        return isSet_(other); 
+    }
 
     /// @brief Returns `true` if the flag at the given index is not set.
-    bool operator!=(const E& idx) const { return !this->isSet(idx); }
+    bool operator!=(const E& idx) const { 
+        FF_VD(idx, false);
+        FF_DEBUG("!= " << idx);
+        return !isSet_(idx); 
+    }
     /// @brief Returns `true` if the flag at the given index is not set.
-    bool operator!=(const FlagField& other) const { return !this->isSet(other); }
+    bool operator!=(const FlagField& other) const { 
+        FF_DEBUG("!= other");
+        return !isSet_(other); 
+    }
 
-    bool operator< (const FlagField& other) const { return this->numSetFlags() <  other.numSetFlags(); }
-    bool operator<=(const FlagField& other) const { return this->numSetFlags() <= other.numSetFlags(); }
-    bool operator> (const FlagField& other) const { return this->numSetFlags() >  other.numSetFlags(); }
-    bool operator>=(const FlagField& other) const { return this->numSetFlags() >= other.numSetFlags(); }
+    /// @brief Compares the number of set flags.
+    template <size_t M, class X> 
+    bool operator< (const FlagField<M, X>& other) const { 
+        FF_DEBUG("< other");
+        return numSetFlags() <  other.numSetFlags(); 
+    }
+    /// @brief Compares the number of set flags.
+    template <size_t M, class X> 
+    bool operator<=(const FlagField<M, X>& other) const { 
+        FF_DEBUG("<= other");
+        return numSetFlags() <= other.numSetFlags(); 
+    }
+    /// @brief Compares the number of set flags.
+    template <size_t M, class X> 
+    bool operator> (const FlagField<M, X>& other) const { 
+        FF_DEBUG("> other");
+        return numSetFlags() > other.numSetFlags(); 
+    }
+    /// @brief Compares the number of set flags.
+    template <size_t M, class X> 
+    bool operator>=(const FlagField<M, X>& other) const { 
+        FF_DEBUG(">= other");
+        return numSetFlags() >= other.numSetFlags(); 
+    }
 
 /// @subsubsection AND Operator Functions
 
     /// @brief Returns `true` if matching flags are set.
-    bool operator&&(const E& idx) const { return this->isSet(idx); }
+    bool operator&&(const E& idx) const { 
+        FF_VD(idx, false);
+        FF_DEBUG("&& " << idx);
+        return isSet_(idx); 
+    }
     /// @brief Returns `true` if matching flags are set.
-    bool operator&&(const FlagField& other) const { return this->isSet(other); }
+    bool operator&&(const FlagField& other) const { 
+        FF_DEBUG("&& other");
+        return isSet_(other); 
+    }
 
-    /// @brief Sets matching flags.
+    /// @brief Bitwise AND assignment.
     FlagField& operator&=(const E& idx) {
-        FF_DEBUG("Bitwise AND at index: " << idx);
-        bool keep = this->isSet(idx);
-        this->clear();
-        if (keep) { this->set(idx); }
+        FF_VD(idx, *this);
+        FF_DEBUG("&= " << idx);
+        bool keep = isSet_(idx);
+        clear_();
+        if (keep) { set_(idx); }
         return *this;
     }
-    /// @brief Sets matching flags.
+    /// @brief Bitwise AND assignment.
     FlagField& operator&=(const FlagField& other) {
-        FF_DEBUG("Bitwise FlagField AND");
+        FF_DEBUG("&= other");
         for (size_t i = 0; i < sizeBytes(); i++) {
             flags_[i] &= other.flags_[i];
         }
@@ -405,56 +466,70 @@ public:
 
     /// @brief Makes a new FlagField with matching flags.
     FlagField operator&(const E& idx) const {
-        FlagField x(this);
-        x &= idx;
+        FlagField x;
+        FF_VD(idx, x);
+        FF_DEBUG("& " << idx);
+        x.set_(idx);
         return x;
     }
     /// @brief Makes a new FlagField with matching flags.
     FlagField operator&(const FlagField& other) const {
-        FlagField x(this);
-        x &= other;
+        FlagField x = *this;
+        FF_DEBUG("& other");
+        for (size_t i = 0; i < sizeBytes(); i++) {
+            x.flags_[i] &= other.flags_[i];
+        }
         return x;
     }
 
 /// @subsubsection OR Operator Functions
 
     /// @brief Returns `true` if any flag matches.
-    bool operator||(const E& idx) const { return this->isSet(idx); }
+    bool operator||(const E& idx) const { 
+        FF_VD(idx, false);
+        FF_DEBUG("|| " << idx);
+        return isSet_(idx); 
+    }
     /// @brief Returns `true` if any flag matches.
-    bool operator||(const FlagField& idx) const { 
-        constexpr uint8_t mask = (1 << size() % 8) - 1;
+    bool operator||(const FlagField& other) const {
+        FF_DEBUG("|| other"); 
+        uint8_t mask = (1 << size() % 8) - 1;
+        if (mask == 0) mask = 0xFF;
         for (size_t i = 0; i < sizeBytes() - 1; i++) {
-            if (flags_[i] & other.flags_[i] != 0) return true;
+            if ((flags_[i] & other.flags_[i]) != 0) return true;
         }
-        if (flags_[i] & other.flags_[i] & mask != 0) return true;
-        return false; 
+        return ((flags_[sizeBytes() - 1] & 
+            other.flags_[sizeBytes() - 1]) & 
+            mask) != 0;
     }
 
     /// @brief Sets combined flags.
     FlagField& operator|=(const E& idx) {
-        FF_DEBUG("Bitwise OR at index: " << idx);
-        this->set(idx);
+        FF_VD(idx, *this);
+        FF_DEBUG("|= " << idx);
+        set_(idx);
         return *this;
     }
     /// @brief Sets combined flags.
     FlagField& operator|=(const FlagField& other) {
-        FF_DEBUG("Bitwise FlagField OR");
-        for (size_t i = 0; i < sizeBytes(); i++) {
-            flags_[i] |= other.flags_[i];
-        }
+        FF_DEBUG("|= other");
+        set_(other);
         return *this;
     }
 
     /// @brief Makes a new FlagField with combined flags.
     FlagField operator|(const E& idx) const {
-        FlagField x(this);
-        x |= idx;
+        FlagField x = *this;
+        FF_VD(idx, x);
+        FF_DEBUG("| " << idx);
+        x.set_(idx);
         return x;
     }
     /// @brief Makes a new FlagField with combined flags.
     FlagField operator|(const FlagField& other) const {
-        FlagField x(this);
-        x |= other;
+        FlagField x = *this;
+        FF_DEBUG("| other");
+        x.set_(other);
         return x;
     }
 
@@ -462,15 +537,18 @@ public:
 
     /// @brief Sets only the flag at the given index.
     FlagField& operator=(const E& idx) {
-        this->clear();
-        this->set(idx);
+        FF_VD(idx, *this);
+        FF_DEBUG("= " << idx);
+        clear_();
+        set_(idx);
         return *this;
     }
     /// @brief Sets the flags from another FlagField.
     FlagField& operator=(const FlagField& other) {
+        FF_DEBUG("= other");
         if (this != &other) {
-            this->clear();
-            this->set(other);
+            clear_();
+            set_(other);
         }
         return *this;
     }
@@ -478,91 +556,126 @@ public:
 /// @subsubsection Access Operators
 
     /// @brief Returns `true` if every flag is set.
-    bool operator()(const E& idx) const { return this->isSet(idx); }
+    bool operator()(const E& idx) const { 
+        FF_VD(idx, false);
+        FF_DEBUG("(" << idx << ")");
+        return isSet_(idx); 
+    }
     /// @brief Returns `true` if every flag is set.
-    bool operator()(const FlagField& other) const { return this->isSet(other); }
+    bool operator()(const FlagField& other) const { 
+        FF_DEBUG("(other)");
+        return isSet(other); 
+    }
     /// @brief Returns `true` if every flag is set.
-    template <typename... Fs> bool operator()(const Fs&... idxs) const { return this->isSet(idxs...); }
+    template <typename... Fs> bool operator()(const Fs&... idxs) const { return isSet(idxs...); }
 
     /// @brief Returns `index` if the indexed flag is set.
-    E operator[](const E& idx) const { return this->isSet(idx) * idx; }
+    E operator[](const E& idx) const { 
+        FF_VD(idx, (E)0);
+        FF_DEBUG("[" << idx << "]");
+        return E(isSet(idx) * (size_t)idx); 
+    }
 
 /// @subsubsection Arithmatic Operators
 
     /// @brief Sets the flag at the given index.
     FlagField& operator+=(const E& idx) {
-        this->set(idx); return *this;
+        FF_VD(idx, *this);
+        FF_DEBUG("+= " << idx);
+        set_(idx); 
+        return *this;
     }
     /// @brief Sets the flag at the given index.
-    FlagField& operator+=(const FlagField& idx) {
-        this->set(idx); return *this;
+    FlagField& operator+=(const FlagField& other) {
+        FF_DEBUG("+= other");
+        set_(other); 
+        return *this;
     }
     /// @brief Sets the flag at the given index.
     FlagField operator+(const E& idx) const {
-        FlagField x(this);
-        x.set(idx);
+        FlagField x = *this;
+        FF_VD(idx, x);
+        FF_DEBUG("+ " << idx);
+        x.set_(idx);
         return x;
     }
     /// @brief Sets the flag at the given index.
-    FlagField operator+(const FlagField& idx) const {
-        FlagField x(this);
-        x.set(idx);
+    FlagField operator+(const FlagField& other) const {
+        FlagField x = *this;
+        FF_DEBUG("+ other");
+        x.set_(other);
         return x;
     }
 
     /// @brief Clears the flag at the given index.
     FlagField& operator-=(const E& idx) {
-        this->clear(idx); return *this;
+        FF_VD(idx, *this);
+        FF_DEBUG("-= " << idx);
+        clear_(idx); 
+        return *this;
     }
     /// @brief Clears the flag at the given index.
-    FlagField& operator-=(const FlagField& idx) {
-        this->clear(idx); return *this;
+    FlagField& operator-=(const FlagField& other) {
+        FF_DEBUG("-= other");
+        clear_(other); 
+        return *this;
     }
     /// @brief Clears the flag at the given index.
     FlagField operator-(const E& idx) const {
-        FlagField x(this);
-        x.clear(idx);
+        FlagField x = *this;
+        FF_VD(idx, x);
+        FF_DEBUG("- " << idx);
+        x.clear_(idx);
         return x;
     }
     /// @brief Clears the flag at the given index.
-    FlagField operator-(const FlagField& idx) const {
-        FlagField x(this);
-        x.clear(idx);
+    FlagField operator-(const FlagField& other) const {
+        FlagField x = *this;
+        FF_DEBUG("- other");
+        x.clear_(other);
         return x;
     }
 
     /// @brief Clears every flag if false.
     FlagField& operator*=(const bool& b) {
-        if (!b) this->clear();
+        FF_DEBUG("*= " << (b ? "true" : "false"));
+        if (!b) clear_();
         return *this;
     }
     /// @brief Creates a new empty (if `false`) or identical (if `true`) FlagField.
     FlagField operator*(const bool& b) const {
         FlagField x;
-        if (b) x.set(this);
+        FF_DEBUG("* " << (b ? "true" : "false"));
+        if (b) x.set_(this);
         return x;
     }
 
     /// @brief Toggles the flag at the given index.
     FlagField& operator^=(const E& idx) {
-        this->toggle(idx);
+        FF_VD(idx, *this);
+        FF_DEBUG("^= " << idx);
+        toggle_(idx);
         return *this;
     }
     /// @brief Toggles the flags at the given indices.
-    FlagField& operator^=(const FlagField& idx) {
-        this->toggle(idx);
+    FlagField& operator^=(const FlagField& other) {
+        FF_DEBUG("^= other");
+        toggle_(other);
         return *this;
     }
     /// @brief Toggles the flag at the given index.
     FlagField operator^(const E& idx) const {
-        FlagField x(this);
-        x.toggle(idx);
+        FlagField x = *this;
+        FF_VD(idx, x);
+        FF_DEBUG("^ " << idx);
+        x.toggle_(idx);
         return x;
     }
     /// @brief Toggles the flag at the given index.
     FlagField operator^(const FlagField& idx) const {
-        FlagField x(this);
-        x.toggle(idx);
+        FlagField x = *this;
+        FF_DEBUG("^ other");
+        x.toggle_(idx);
         return x;
     }
 
@@ -570,9 +683,9 @@ public:
 
     friend std::ostream& operator<<(std::ostream& os, const FlagField& ff) {
         os << "FlagField<" << ff.name() << ", " << ff.size() << ">: [";
-        for (size_t i = 0; i < size(); i++) {
+        for (size_t i = 0; i < ff.size(); i++) {
             if ((i % 4 == 0) && (i != 0) && (i != ff.size() - 1)) os << " ";
-            os << ff.isSet(i) ? "." : "|";
+            os << (ff.isSet_((E)i) ? "|" : ".");
         }
         return os << "]";
     }
@@ -588,18 +701,95 @@ private:
         while (byte) { count += byte & 1; byte >>= 1; }
         return count;
     }
+
+    /// @brief Sets every flag.
+    void set_() {
+        for (size_t i = 0; i < sizeBytes(); i++) {
+            flags_[i] = 0xFF;
+        }
+    }
+
+    /// @brief Set a flag at the given index.
+    void set_(const E& index) {
+        flags_[index / 8] |= (1 << (index % 8));
+    }
+
+    /// @brief Sets flags from another FlagField.
+    void set_(const FlagField& other) {
+        for (size_t i = 0; i < sizeBytes(); i++) {
+            flags_[i] |= other.flags_[i];
+        }
+    }
+
+    template <class... Fs> void setList_(const E& idx, const Fs&... idxs) {
+        set_(idx); set_(idxs...);
+    }
+
+    /// @brief Clears every flag.
+    void clear_() {
+        for (size_t i = 0; i < sizeBytes(); i++) {
+            flags_[i] = 0;
+        }
+    }
+
+    /// @brief Clears a flag at the given index.
+    void clear_(const E& index) {
+        flags_[index / 8] &= ~(1 << (index % 8));
+    }
+
+    /// @brief Clears flags from another FlagField.
+    void clear_(const FlagField& other) {
+        for (size_t i = 0; i < sizeBytes(); i++) {
+            flags_[i] &= ~other.flags_[i];
+        }
+    }
+
+    /// @brief Toggles every flag.
+    void toggle_() {
+        for (size_t i = 0; i < sizeBytes(); i++) {
+            flags_[i] ^= 0xFF;
+        }
+    }
+
+    /// @brief Toggles a flag at the given index.
+    void toggle_(const E& index) {
+        flags_[index / 8] ^= (1 << (index % 8));
+    }
+
+    /// @brief Toggles flags from another FlagField.
+    void toggle_(const FlagField& other) {
+        for (size_t i = 0; i < sizeBytes(); i++) {
+            flags_[i] ^= other.flags_[i];
+        }
+    }
+
+    /// @brief Checks if every flag is set
+    bool isSet_() const {
+        // Set a mask for the last byte
+        const uint8_t mask = (1 << size() % 8) - 1;
+        // Iterate over every fully used byte
+        for (size_t i = 0; i < sizeBytes() - 1; i++) {
+            if (flags_[i] != 0xFF) return false;
+        }
+        // Check if every used bit in the last byte is used
+        if(mask == 0) return flags_[sizeBytes() - 1] == 0xFF;
+        return (flags_[sizeBytes() - 1] & mask) == mask;
+    }
+
+    /// @brief Checks if a flag is set
+    bool isSet_(const E& idx) const {
+        return flags_[idx / 8] & (1 << (idx % 8));
+    }
+
+    /// @brief Checks if every set flag is set in this
+    bool isSet_(const FlagField& other) const {
+        for (size_t i = 0; i < size(); i++) {
+            if (other.isSet_((E)i) && !isSet((E)i)) return false;
+        }
+        return true;
+    }
 };
 
-// /// @section FlagField Related Functions
-
-// template <size_t numFlags = 8>
-// std::ostream& operator<<(std::ostream &os, const FlagField<numFlags> &ff) {
-//     os << "FlagField<" << numFlags << ">: 0b";
-//     for (size_t i = 0; i < numFlags; i++) { 
-//         if (i % 8 == 0 && i != 0) os << " ";
-//         os << (ff.isFlagSet(i) ? "1" : "0"); 
-//     }
-//     return os;
-// }
+/// @section FlagField Related Functions
 
 #endif // FLAGFIELD_HPP
