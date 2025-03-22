@@ -564,7 +564,7 @@ public:
     /// @brief Returns `true` if every flag is set.
     bool operator()(const FlagField& other) const { 
         FF_DEBUG("(other)");
-        return isSet(other); 
+        return isSet_(other); 
     }
     /// @brief Returns `true` if every flag is set.
     template <typename... Fs> bool operator()(const Fs&... idxs) const { return isSet(idxs...); }
@@ -573,7 +573,7 @@ public:
     E operator[](const E& idx) const { 
         FF_VD(idx, (E)0);
         FF_DEBUG("[" << idx << "]");
-        return E(isSet(idx) * (size_t)idx); 
+        return E(isSet_(idx) * (size_t)idx); 
     }
 
 /// @subsubsection Arithmatic Operators
@@ -646,7 +646,7 @@ public:
     FlagField operator*(const bool& b) const {
         FlagField x;
         FF_DEBUG("* " << (b ? "true" : "false"));
-        if (b) x.set_(this);
+        if (b) x.set_(*this);
         return x;
     }
 
@@ -682,7 +682,7 @@ public:
 /// @subsection Out Stream Operator Overloads
 
     friend std::ostream& operator<<(std::ostream& os, const FlagField& ff) {
-        os << "FlagField<" << ff.name() << ", " << ff.size() << ">: [";
+        os << "FlagField<" << ff.size() << ", " << ff.name() << ">: [";
         for (size_t i = 0; i < ff.size(); i++) {
             if ((i % 4 == 0) && (i != 0) && (i != ff.size() - 1)) os << " ";
             os << (ff.isSet_((E)i) ? "|" : ".");

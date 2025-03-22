@@ -296,6 +296,159 @@ void test_binary_operators() {
         assert(ff4 || 1);
         assert(ff5 || 1);
     }
+    {   std::cout << "Operators =, (), []" << std::endl;
+        FlagField ff1(1, 3, 5), ff2;
+        assert(ff2.isSet(0) == false);
+        assert(ff2.isSet(1) == false);
+        ff2 = 0;
+        assert(ff2.isSet(0) == true);
+
+        assert(ff2.isSet(1) == false);
+        ff2 = ff1;
+        assert(ff2.isSet(0) == false);
+        assert(ff2.isSet(1) == true);
+
+        assert(ff1(1) == true);
+        assert(ff1(2) == false);
+
+        assert(ff1(1, 3, 5) == true);
+        assert(ff1(1, 2, 3) == false);
+
+        assert(ff1(ff2) == true);
+        ff2 = 0;
+        assert(ff1(ff2) == false);
+        
+        assert(ff1[1] == 1);
+        assert(ff1[2] == 0);
+        assert(ff1[3] == 3);
+        assert(ff1[4] == 0);
+        assert(ff1[5] == 5);
+    }
+    {   std::cout << "Testing addition operators..." << std::endl;
+        FlagField ff1, ff2(0, 1), ff5(2, 3);
+        FlagField<BasicMAX, BasicFlags> ff3, ff4(FlagA, FlagB), ff6(FlagC, FlagD);
+        assert(ff1.isSet(1) == false);
+        ff1 += 1;
+        assert(ff1.isSet(1) == true);
+        assert(ff1.isSet(0) == false);
+        ff1 += ff2;
+        assert(ff1.isSet(0) == true);
+        assert(ff3.isSet(FlagA) == false);
+        ff3 += FlagA;
+        assert(ff3.isSet(FlagA) == true);
+        assert(ff3.isSet(FlagB) == false);
+        ff3 += ff4;
+        assert(ff3.isSet(FlagB) == true);
+
+        ff1.clear();
+        ff3.clear();
+        assert(ff1.isSet(0) == false);
+        assert(ff2.isSet(4) == false);
+        assert(ff3.isSet(FlagA) == false);
+        assert(ff4.isSet(FlagE) == false);
+        ff1 = ff2 + 4;
+        assert(ff1.isSet(4) == true);
+        assert(ff2.isSet(4) == false);
+        ff3 = ff4 + FlagE;
+        assert(ff3.isSet(FlagE) == true);
+        assert(ff4.isSet(FlagE) == false);
+
+        ff1.clear();
+        ff3.clear();
+        assert(ff1.isSet(0) == false);
+        assert(ff2.isSet(3) == false);
+        assert(ff3.isSet(FlagA) == false);
+        assert(ff4.isSet(FlagD) == false);
+        ff1 = ff2 + ff5;
+        assert(ff1.isSet(3) == true);
+        assert(ff2.isSet(3) == false);
+        ff3 = ff4 + ff6;
+        assert(ff3.isSet(FlagD) == true);
+        assert(ff4.isSet(FlagD) == false);
+
+        std::cout << ff4 << " + " << ff6 << " = " << ff3 << std::endl;
+    }
+    {   std::cout << "Testing subtraction operators..." << std::endl;
+        FlagField ff1, ff2(0, 1), ff5;
+        FlagField<BasicMAX, BasicFlags> ff3, ff4(FlagA, FlagB), ff6;
+        
+        ff1 = ff2;
+        ff3 = ff4;
+        assert(ff1.isSet(1) == true);
+        ff1 -= 1;
+        assert(ff1.isSet(1) == false);
+        assert(ff1.isSet(0) == true);
+        ff1 -= ff2;
+        assert(ff1.isSet(0) == false);
+        assert(ff3.isSet(FlagA) == true);
+        ff3 -= FlagA;
+        assert(ff3.isSet(FlagA) == false);
+        assert(ff3.isSet(FlagB) == true);
+        ff3 -= ff4;
+        assert(ff3.isSet(FlagB) == false);
+
+        ff1 = ff2;
+        ff3 = ff4;
+        assert(ff1.isSet(1) == true);
+        assert(ff2.isSet(1) == true);
+        assert(ff3.isSet(FlagA) == true);
+        assert(ff4.isSet(FlagA) == true);
+        ff1 = ff2 - 1;
+        assert(ff1.isSet(1) == false);
+        assert(ff2.isSet(1) == true);
+        ff3 = ff4 - FlagA;
+        assert(ff3.isSet(FlagA) == false);
+        assert(ff4.isSet(FlagA) == true);
+
+        ff1 = ff2;
+        ff3 = ff4;
+        ff5.set(1, 2);
+        ff6.set(FlagB, FlagC);
+        assert(ff1.isSet(1) == true);
+        assert(ff2.isSet(1) == true);
+        assert(ff3.isSet(FlagB) == true);
+        assert(ff4.isSet(FlagB) == true);
+        ff1 = ff2 - ff5;
+        assert(ff1.isSet(1) == false);
+        assert(ff2.isSet(1) == true);
+        ff3 = ff4 - ff6;
+        assert(ff3.isSet(FlagB) == false);
+        assert(ff4.isSet(FlagB) == true);
+        std::cout << ff4 << " - " << ff6 << " = " << ff3 << std::endl;
+    }
+    {   std::cout << "Testing multiplication operators..." << std::endl;
+        FlagField ff1(0, 1), ff2(2, 3);
+        FlagField<BasicMAX, BasicFlags> ff3(FlagA, FlagB), ff4(FlagC, FlagD);
+        
+        assert(ff1.isSet(0) == true);
+        ff1 *= true;
+        assert(ff1.isSet(0) == true);
+        ff1 *= false;
+        assert(ff1.isSet(0) == false);
+        assert(ff3.isSet(FlagA) == true);
+        ff3 *= true;
+        assert(ff3.isSet(FlagA) == true);
+        ff3 *= false;
+        assert(ff3.isSet(FlagA) == false);
+
+        assert(ff1.isSet(2) == false);
+        assert(ff2.isSet(2) == true);
+        ff1 = ff2 * true;
+        assert(ff1.isSet(2) == true);
+        assert(ff2.isSet(2) == true);
+        ff1 = ff2 * false;
+        assert(ff1.isSet(2) == false);
+        assert(ff2.isSet(2) == true);
+        assert(ff3.isSet(FlagC) == false);
+        assert(ff4.isSet(FlagC) == true);
+        ff3 = ff4 * true;
+        assert(ff3.isSet(FlagC) == true);
+        assert(ff4.isSet(FlagC) == true);
+        ff3 = ff4 * false;
+        assert(ff3.isSet(FlagC) == false);
+        assert(ff4.isSet(FlagC) == true);
+        std::cout << ff4 << " * false = " << ff3 << std::endl;
+    }
 }
 
 void run_all_tests() {
